@@ -133,7 +133,7 @@ export default function Home() {
           />
         </div>
       </div>
-
+ 
       {/* График */}
       <div className="w-full bg-white rounded-2xl shadow p-6 mb-6 max-w-6xl">
         {loading ? (
