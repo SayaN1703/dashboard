@@ -28,9 +28,7 @@ type Round = {
 export default function Home() {
   const [rounds, setRounds] = useState<Round[]>([])
   const [loading, setLoading] = useState(true)
-  const [startDate, setStartDate] = useState<Date>(
-    new Date(new Date().setDate(new Date().getDate() - 7))
-  )
+  const [startDate, setStartDate] = useState<Date>(new Date(new Date().setDate(new Date().getDate() - 7)))
   const [endDate, setEndDate] = useState<Date>(new Date())
 
   useEffect(() => {
@@ -47,19 +45,12 @@ export default function Home() {
       else setRounds(data ?? [])
       setLoading(false)
     }
-
     loadRounds()
     const ch = supabase
       .channel('realtime:rounds')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'rounds' },
-        loadRounds
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'rounds' }, loadRounds)
       .subscribe()
-    return () => {
-      supabase.removeChannel(ch)
-    }
+    return () => { supabase.removeChannel(ch) }
   }, [startDate, endDate])
 
   const summary = useMemo(() => {
@@ -71,8 +62,7 @@ export default function Home() {
   }, [rounds])
 
   const chartData = useMemo(() => {
-    const m: Record<string, { date: string; deposit: number; withdrawal: number }> =
-      {}
+    const m: Record<string, { date: string; deposit: number; withdrawal: number }> = {}
     rounds.forEach((r) => {
       if (!r.ended_at) return
       const d = new Date(r.ended_at).toISOString().slice(0, 10)
@@ -84,58 +74,58 @@ export default function Home() {
   }, [rounds])
 
   return (
-    <main className="min-h-screen bg-neutral-100 p-4 sm:p-8 flex flex-col items-center">
+    <main className="min-h-screen bg-gray-100 p-4 sm:p-8">
       {/* Заголовок */}
-      <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center tracking-tight">
+      <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-8 tracking-tight">
         Дашборд расходов и смен
       </h1>
 
       {/* Карточки */}
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6 max-w-6xl">
-        <div className="bg-white rounded-2xl shadow flex flex-col justify-center items-center p-7 min-w-[160px]">
-          <span className="text-3xl font-extrabold text-gray-900">{summary.totalRounds}</span>
-          <span className="text-base text-gray-500 mt-2">Смены</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-xl shadow flex flex-col items-start justify-center p-6 min-w-[180px]">
+          <span className="text-2xl font-bold text-gray-900">{summary.totalRounds}</span>
+          <span className="text-sm text-gray-500 mt-1">Смены</span>
         </div>
-        <div className="bg-white rounded-2xl shadow flex flex-col justify-center items-center p-7 min-w-[160px]">
-          <span className="text-3xl font-extrabold text-gray-900">${summary.totalDeposit.toFixed(2)}</span>
-          <span className="text-base text-gray-500 mt-2">Всего расходов</span>
+        <div className="bg-white rounded-xl shadow flex flex-col items-start justify-center p-6 min-w-[180px]">
+          <span className="text-2xl font-bold text-gray-900">${summary.totalDeposit.toFixed(2)}</span>
+          <span className="text-sm text-gray-500 mt-1">Всего расходов</span>
         </div>
-        <div className="bg-white rounded-2xl shadow flex flex-col justify-center items-center p-7 min-w-[160px]">
-          <span className="text-3xl font-extrabold text-gray-900">${summary.totalWithdrawal.toFixed(2)}</span>
-          <span className="text-base text-gray-500 mt-2">Всего вывода</span>
+        <div className="bg-white rounded-xl shadow flex flex-col items-start justify-center p-6 min-w-[180px]">
+          <span className="text-2xl font-bold text-gray-900">${summary.totalWithdrawal.toFixed(2)}</span>
+          <span className="text-sm text-gray-500 mt-1">Всего вывода</span>
         </div>
-        <div className="bg-white rounded-2xl shadow flex flex-col justify-center items-center p-7 min-w-[160px]">
-          <span className="text-3xl font-extrabold text-gray-900">${summary.avgCheck.toFixed(2)}</span>
-          <span className="text-base text-gray-500 mt-2">Средний чек</span>
+        <div className="bg-white rounded-xl shadow flex flex-col items-start justify-center p-6 min-w-[180px]">
+          <span className="text-2xl font-bold text-gray-900">${summary.avgCheck.toFixed(2)}</span>
+          <span className="text-sm text-gray-500 mt-1">Средний чек</span>
         </div>
       </div>
 
       {/* Фильтр по датам */}
-      <div className="w-full flex flex-wrap justify-start gap-4 mb-6 max-w-6xl">
-        <div className="flex items-center gap-2 bg-white p-3 rounded-xl shadow min-w-[170px]">
+      <div className="flex flex-wrap gap-4 mb-6">
+        <div className="flex items-center gap-2 bg-white p-3 rounded-lg shadow">
           <DatePicker
             selected={startDate}
             onChange={(d) => d && setStartDate(d)}
             dateFormat="MM/dd/yyyy"
             maxDate={new Date()}
-            className="border-none bg-transparent text-gray-900 text-base w-28 outline-none"
+            className="border-none bg-transparent text-gray-900 text-sm w-28"
             calendarClassName="!z-30"
           />
         </div>
-        <div className="flex items-center gap-2 bg-white p-3 rounded-xl shadow min-w-[170px]">
+        <div className="flex items-center gap-2 bg-white p-3 rounded-lg shadow">
           <DatePicker
             selected={endDate}
             onChange={(d) => d && setEndDate(d)}
             dateFormat="MM/dd/yyyy"
             maxDate={new Date()}
-            className="border-none bg-transparent text-gray-900 text-base w-28 outline-none"
+            className="border-none bg-transparent text-gray-900 text-sm w-28"
             calendarClassName="!z-30"
           />
         </div>
       </div>
- 
+
       {/* График */}
-      <div className="w-full bg-white rounded-2xl shadow p-6 mb-6 max-w-6xl">
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
         {loading ? (
           <p className="text-gray-600">Загрузка данных...</p>
         ) : (
@@ -173,13 +163,13 @@ export default function Home() {
       </div>
 
       {/* Таблица */}
-      <div className="w-full bg-white rounded-2xl shadow p-6 mb-10 max-w-6xl">
+      <div className="bg-white rounded-xl shadow p-6 mb-8">
         <div className="overflow-x-auto">
-          <table className="min-w-full text-base text-left">
+          <table className="min-w-full text-sm text-left">
             <thead>
-              <tr className="text-gray-700 border-b font-bold">
+              <tr className="text-gray-600 border-b">
                 <th className="py-3 px-4">Пользователь</th>
-                <th className="py-3 px-4 text-center">Номеров</th>
+                <th className="py-3 px-4">Номеров</th>
                 <th className="py-3 px-4">Депозит</th>
                 <th className="py-3 px-4">Вывод</th>
                 <th className="py-3 px-4">Дата</th>
